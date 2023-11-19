@@ -41,7 +41,7 @@ yarn add @cshawaus/lite-youtube
 After installing import into your project using the following:
 
 ```js
-import '@cshawaus/lite-youtube';
+import '@cshawaus/lite-youtube'
 ```
 
 ## Usage with CommonJS
@@ -49,7 +49,7 @@ import '@cshawaus/lite-youtube';
 CommonJS is supported for those who aren't ready to adopt ESM yet.
 
 ```js
-require('@cshawaus/lite-youtube');
+require('@cshawaus/lite-youtube')
 ```
 
 ## Install with CDN
@@ -59,17 +59,11 @@ If you want the paste-and-go version, you can simply load it via CDN:
 ```html
 <!-- always the latest version -->
 <script src="https://cdn.jsdelivr.net/npm/@cshawaus/lite-youtube/lib/index.js"></script>
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@cshawaus/lite-youtube/lib/index.esm.js"
-></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@cshawaus/lite-youtube/lib/index.esm.js"></script>
 
 <!-- pinned to a specific version -->
 <script src="https://cdn.jsdelivr.net/npm/@cshawaus/lite-youtube@1.0.0/lib/index.js"></script>
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@cshawaus/lite-youtube@1.0.0/lib/index.esm.js"
-></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@cshawaus/lite-youtube@1.0.0/lib/index.esm.js"></script>
 ```
 
 ## Basic Usage
@@ -89,11 +83,9 @@ A fallback appears in any of the following circumstances:
 
 ```html
 <lite-youtube videoid="guJLfqTFfIw">
-  <a
-    class="lite-youtube-fallback"
-    href="https://www.youtube.com/watch?v=guJLfqTFfIw"
-    >Watch on YouTube: "Sample output of devtools-to-video cli tool"</a
-  >
+  <a class="lite-youtube-fallback" href="https://www.youtube.com/watch?v=guJLfqTFfIw">
+    Watch on YouTube: "Sample output of devtools-to-video cli tool"
+  </a>
 </lite-youtube>
 ```
 
@@ -131,54 +123,24 @@ Example CSS:
 }
 ```
 
-## Using shadow DOM `::part`
-
-Because the shadow DOM exists outside of the normal page context it prevent global CSS from being applied. To overcome this you can make use of the `::part` CSS pseudo-element that can traverse the shadow tree and apply styles from the global context.
-
-```css
-.lite-youtube ::part(frame) {
-  border: 2px solid red;
-}
-```
-
-### Available parts
-
-| CSS pseudo-element      | Description                                |
-| ----------------------- | ------------------------------------------ |
-| `::part(frame)`         | Targets the main player frame              |
-| `::part(picture-frame)` | Targets the `<picture>` element            |
-| `::part(picture)`       | Targets the `<img>` element in `<picture>` |
-| `::part(play-button)`   | Targets the play button                    |
-
 ## Playlist Usage
 
 Setting the YouTube playlistid allows the playlist interface to load on interaction. Note, this still requires a videoid for to load a placeholder thumbnail as YouTube does not return a thumbnail for playlists in the API.
 
 ```html
-<lite-youtube
-  videoid="VLrYOji75Vc"
-  playlistid="PL-G5r6j4GptH5JTveoLTVqpp7w2oc27Q9"
-></lite-youtube>
+<lite-youtube videoid="VLrYOji75Vc" playlistid="PL-G5r6j4GptH5JTveoLTVqpp7w2oc27Q9"></lite-youtube>
 ```
 
 ## Add Video Title
 
 ```html
-<lite-youtube
-  videotitle="This is a video title"
-  videoid="guJLfqTFfIw"
-></lite-youtube>
+<lite-youtube videotitle="This is a video title" videoid="guJLfqTFfIw"></lite-youtube>
 ```
 
 ## Update interface for Locale</h3>
 
 ```html
-<lite-youtube
-  videoplay="Mirar"
-  videotitle="Mis hijos se burlan de mi español"
-  videoid="guJLfqTFfIw"
->
-</lite-youtube>
+<lite-youtube videoplay="Mirar" videotitle="Mis hijos se burlan de mi español" videoid="guJLfqTFfIw"> </lite-youtube>
 ```
 
 ## Style It
@@ -196,6 +158,25 @@ Height and Width are responsive in the component.
   <lite-youtube videoid="guJLfqTFfIw"></lite-youtube>
 </div>
 ```
+
+### Using shadow DOM `::part`
+
+Because the shadow DOM exists outside of the normal page context it prevent global CSS from being applied. To overcome this you can make use of the `::part` CSS pseudo-element that can traverse the shadow tree and apply styles from the global context.
+
+```css
+.lite-youtube ::part(frame) {
+  border: 2px solid red;
+}
+```
+
+#### Available parts
+
+| CSS pseudo-element      | Description                                |
+| ----------------------- | ------------------------------------------ |
+| `::part(frame)`         | Targets the main player frame              |
+| `::part(picture-frame)` | Targets the `<picture>` element            |
+| `::part(picture)`       | Targets the `<img>` element in `<picture>` |
+| `::part(play-button)`   | Targets the play button                    |
 
 ## Enable YouTube Shorts interaction on mobile
 
@@ -223,10 +204,7 @@ Uses Intersection Observer if available to automatically load the YouTube iframe
 ## Fine tune the poster quality for a video
 
 ```html
-<lite-youtube
-  videoid="guJLfqTFfIw"
-  posterquality="maxresdefault"
-></lite-youtube>
+<lite-youtube videoid="guJLfqTFfIw" posterquality="maxresdefault"></lite-youtube>
 ```
 
 ## YouTube QueryParams
@@ -236,8 +214,7 @@ Use any [YouTube Embedded Players and Player Parameters](https://developers.goog
 > Note: the exception to this rule is the autoplay param; because of the nature of the performance loading and the inconsistency of usage, that parameter generally does not work. See [this comment](https://github.com/cshawaus/lite-youtube/issues/66#issuecomment-1182110925) for details.
 
 ```html
-<lite-youtube videoid="guJLfqTFfIw" params="controls=0&enablejsapi=1">
-</lite-youtube>
+<lite-youtube videoid="guJLfqTFfIw" params="controls=0&enablejsapi=1"> </lite-youtube>
 ```
 
 ## Attributes
