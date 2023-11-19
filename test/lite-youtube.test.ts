@@ -4,8 +4,8 @@ import { fixtureCleanup } from '@open-wc/testing-helpers';
 
 import { setViewport } from '@web/test-runner-commands';
 
-import { LiteYTEmbed } from '../lite-youtube.js';
-import '../lite-youtube.js';
+import { LiteYTEmbed } from '../src/lite-youtube.js';
+import '../src/lite-youtube.js';
 
 const baseTemplate = html`<lite-youtube
   videoTitle="Test Me"

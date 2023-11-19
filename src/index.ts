@@ -15,105 +15,117 @@
  *   https://github.com/Daugilas/lazyYT https://github.com/vb/lazyframe
  */
 export class LiteYTEmbed extends HTMLElement {
-  shadowRoot!: ShadowRoot;
-  private domRefFrame!: HTMLDivElement;
+  shadowRoot!: ShadowRoot
+
+  private domRefFrame!: HTMLDivElement
+
   private domRefImg!: {
-    fallback: HTMLImageElement;
-    webp: HTMLSourceElement;
-    jpeg: HTMLSourceElement;
-  };
-  private domRefPlayButton!: HTMLButtonElement;
-  private static isPreconnected = false;
-  private isIframeLoaded = false;
+    fallback: HTMLImageElement
+    webp: HTMLSourceElement
+    jpeg: HTMLSourceElement
+  }
+
+  private domRefPlayButton!: HTMLButtonElement
+
+  private static isPreconnected = false
+
+  private isIframeLoaded = false
 
   constructor() {
-    super();
-    this.setupDom();
+    super()
+    this.setupDom()
   }
 
   static get observedAttributes(): string[] {
-    return ['videoid', 'playlistid', 'videoplay', 'videotitle'];
+    return ['videoid', 'playlistid', 'videoplay', 'videotitle']
   }
 
   connectedCallback(): void {
     this.addEventListener('pointerover', LiteYTEmbed.warmConnections, {
       once: true,
-    });
+    })
 
-    this.addEventListener('click', () => this.addIframe());
+    this.addEventListener('click', this.frameClickHandler)
+  }
+
+  disconnectedCallback(): void {
+    this.removeEventListener('pointerover', LiteYTEmbed.warmConnections)
+
+    this.removeEventListener('click', this.frameClickHandler)
   }
 
   get videoId(): string {
-    return encodeURIComponent(this.getAttribute('videoid') || '');
+    return encodeURIComponent(this.getAttribute('videoid') || '')
   }
 
   set videoId(id: string) {
-    this.setAttribute('videoid', id);
+    this.setAttribute('videoid', id)
   }
 
   get playlistId(): string {
-    return encodeURIComponent(this.getAttribute('playlistid') || '');
+    return encodeURIComponent(this.getAttribute('playlistid') || '')
   }
 
   set playlistId(id: string) {
-    this.setAttribute('playlistid', id);
+    this.setAttribute('playlistid', id)
   }
 
   get videoTitle(): string {
-    return this.getAttribute('videotitle') || 'Video';
+    return this.getAttribute('videotitle') || 'Video'
   }
 
   set videoTitle(title: string) {
-    this.setAttribute('videotitle', title);
+    this.setAttribute('videotitle', title)
   }
 
   get videoPlay(): string {
-    return this.getAttribute('videoplay') || 'Play';
+    return this.getAttribute('videoplay') || 'Play'
   }
 
   set videoPlay(name: string) {
-    this.setAttribute('videoplay', name);
+    this.setAttribute('videoplay', name)
   }
 
   get videoStartAt(): string {
-    return this.getAttribute('videoStartAt') || '0';
+    return this.getAttribute('videoStartAt') || '0'
   }
 
   get autoLoad(): boolean {
-    return this.hasAttribute('autoload');
+    return this.hasAttribute('autoload')
   }
 
   get noCookie(): boolean {
-    return this.hasAttribute('nocookie');
+    return this.hasAttribute('nocookie')
   }
 
   get posterQuality(): string {
-    return this.getAttribute('posterquality') || 'hqdefault';
+    return this.getAttribute('posterquality') || 'hqdefault'
   }
 
   get posterLoading(): HTMLImageElement['loading'] {
-    return (
-      (this.getAttribute('posterloading') as HTMLImageElement['loading']) ||
-      'lazy'
-    );
+    return (this.getAttribute('posterloading') as HTMLImageElement['loading']) || 'lazy'
   }
 
   get params(): string {
-    return `start=${this.videoStartAt}&${this.getAttribute('params')}`;
+    return `start=${this.videoStartAt}&${this.getAttribute('params')}`
   }
 
   set params(opts: string) {
-    this.setAttribute('params', opts);
+    this.setAttribute('params', opts)
+  }
+
+  private frameClickHandler = (): void => {
+    this.addIframe()
   }
 
   /**
    * Define our shadowDOM for the component
    */
   private setupDom(): void {
-    const shadowDom = this.attachShadow({ mode: 'open' });
-    let nonce = '';
+    const shadowDom = this.attachShadow({ mode: 'open' })
+    let nonce = ''
     if (window.liteYouTubeNonce) {
-      nonce = `nonce="${window.liteYouTubeNonce}"`;
+      nonce = `nonce="${window.liteYouTubeNonce}"`
     }
     shadowDom.innerHTML = `
       <style ${nonce}>
@@ -201,52 +213,42 @@ export class LiteYTEmbed extends HTMLElement {
         </picture>
         <button id="playButton" part="play-button"></button>
       </div>
-    `;
-    this.domRefFrame = shadowDom.querySelector<HTMLDivElement>('#frame')!;
+    `
+    this.domRefFrame = shadowDom.querySelector<HTMLDivElement>('#frame')!
     this.domRefImg = {
       fallback: shadowDom.querySelector('#fallbackPlaceholder')!,
       webp: shadowDom.querySelector('#webpPlaceholder')!,
       jpeg: shadowDom.querySelector('#jpegPlaceholder')!,
-    };
-    this.domRefPlayButton = shadowDom.querySelector('#playButton')!;
+    }
+    this.domRefPlayButton = shadowDom.querySelector('#playButton')!
   }
 
   /**
    * Parse our attributes and fire up some placeholders
    */
   private setupComponent(): void {
-    this.initImagePlaceholder();
+    this.initImagePlaceholder()
 
-    this.domRefPlayButton.setAttribute(
-      'aria-label',
-      `${this.videoPlay}: ${this.videoTitle}`
-    );
-    this.setAttribute('title', `${this.videoPlay}: ${this.videoTitle}`);
+    this.domRefPlayButton.setAttribute('aria-label', `${this.videoPlay}: ${this.videoTitle}`)
+    this.setAttribute('title', `${this.videoPlay}: ${this.videoTitle}`)
 
     if (this.autoLoad || this.isYouTubeShort()) {
-      this.initIntersectionObserver();
+      this.initIntersectionObserver()
     }
   }
 
   /**
    * Lifecycle method that we use to listen for attribute changes to period
-   * @param {*} name
-   * @param {*} oldVal
-   * @param {*} newVal
    */
-  attributeChangedCallback(
-    name: string,
-    oldVal: unknown,
-    newVal: unknown
-  ): void {
+  attributeChangedCallback(_name: string, oldVal: unknown, newVal: unknown): void {
     if (oldVal !== newVal) {
-      this.setupComponent();
+      this.setupComponent()
 
       // if we have a previous iframe, remove it and the activated class
       if (this.domRefFrame.classList.contains('activated')) {
-        this.domRefFrame.classList.remove('activated');
-        this.shadowRoot.querySelector('iframe')!.remove();
-        this.isIframeLoaded = false;
+        this.domRefFrame.classList.remove('activated')
+        this.shadowRoot.querySelector('iframe')!.remove()
+        this.isIframeLoaded = false
       }
     }
   }
@@ -258,30 +260,30 @@ export class LiteYTEmbed extends HTMLElement {
   private addIframe(isIntersectionObserver = false): void {
     if (!this.isIframeLoaded) {
       // Don't autoplay the intersection observer injection, it's weird
-      let autoplay = isIntersectionObserver ? 0 : 1;
-      const wantsNoCookie = this.noCookie ? '-nocookie' : '';
-      let embedTarget;
+      let autoplay = isIntersectionObserver ? 0 : 1
+      const wantsNoCookie = this.noCookie ? '-nocookie' : ''
+      let embedTarget
       if (this.playlistId) {
-        embedTarget = `?listType=playlist&list=${this.playlistId}&`;
+        embedTarget = `?listType=playlist&list=${this.playlistId}&`
       } else {
-        embedTarget = `${this.videoId}?`;
+        embedTarget = `${this.videoId}?`
       }
 
       // Oh wait, you're a YouTube short, so let's try to make you more workable
       if (this.isYouTubeShort()) {
-        this.params = `loop=1&mute=1&modestbranding=1&playsinline=1&rel=0&enablejsapi=1&playlist=${this.videoId}`;
-        autoplay = 1;
+        this.params = `loop=1&mute=1&modestbranding=1&playsinline=1&rel=0&enablejsapi=1&playlist=${this.videoId}`
+        autoplay = 1
       }
 
       const iframeHTML = `
 <iframe frameborder="0" title="${this.videoTitle}"
   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
   src="https://www.youtube${wantsNoCookie}.com/embed/${embedTarget}autoplay=${autoplay}&${this.params}"
-></iframe>`;
-      this.domRefFrame.insertAdjacentHTML('beforeend', iframeHTML);
-      this.domRefFrame.classList.add('activated');
-      this.isIframeLoaded = true;
-      this.attemptShortAutoPlay();
+></iframe>`
+      this.domRefFrame.insertAdjacentHTML('beforeend', iframeHTML)
+      this.domRefFrame.classList.add('activated')
+      this.isIframeLoaded = true
+      this.attemptShortAutoPlay()
       this.dispatchEvent(
         new CustomEvent('liteYoutubeIframeLoaded', {
           detail: {
@@ -289,8 +291,8 @@ export class LiteYTEmbed extends HTMLElement {
           },
           bubbles: true,
           cancelable: true,
-        })
-      );
+        }),
+      )
     }
   }
 
@@ -298,20 +300,14 @@ export class LiteYTEmbed extends HTMLElement {
    * Setup the placeholder image for the component
    */
   private initImagePlaceholder(): void {
-    const posterUrlWebp = `https://i.ytimg.com/vi_webp/${this.videoId}/${this.posterQuality}.webp`;
-    const posterUrlJpeg = `https://i.ytimg.com/vi/${this.videoId}/${this.posterQuality}.jpg`;
-    this.domRefImg.fallback.loading = this.posterLoading;
-    this.domRefImg.webp.srcset = posterUrlWebp;
-    this.domRefImg.jpeg.srcset = posterUrlJpeg;
-    this.domRefImg.fallback.src = posterUrlJpeg;
-    this.domRefImg.fallback.setAttribute(
-      'aria-label',
-      `${this.videoPlay}: ${this.videoTitle}`
-    );
-    this.domRefImg?.fallback?.setAttribute(
-      'alt',
-      `${this.videoPlay}: ${this.videoTitle}`
-    );
+    const posterUrlWebp = `https://i.ytimg.com/vi_webp/${this.videoId}/${this.posterQuality}.webp`
+    const posterUrlJpeg = `https://i.ytimg.com/vi/${this.videoId}/${this.posterQuality}.jpg`
+    this.domRefImg.fallback.loading = this.posterLoading
+    this.domRefImg.webp.srcset = posterUrlWebp
+    this.domRefImg.jpeg.srcset = posterUrlJpeg
+    this.domRefImg.fallback.src = posterUrlJpeg
+    this.domRefImg.fallback.setAttribute('aria-label', `${this.videoPlay}: ${this.videoTitle}`)
+    this.domRefImg?.fallback?.setAttribute('alt', `${this.videoPlay}: ${this.videoTitle}`)
   }
 
   /**
@@ -322,19 +318,19 @@ export class LiteYTEmbed extends HTMLElement {
       root: null,
       rootMargin: '0px',
       threshold: 0,
-    };
+    }
 
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
+    const observer = new IntersectionObserver((entries, _observer) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting && !this.isIframeLoaded) {
-          LiteYTEmbed.warmConnections();
-          this.addIframe(true);
-          observer.unobserve(this);
+          LiteYTEmbed.warmConnections()
+          this.addIframe(true)
+          observer.unobserve(this)
         }
-      });
-    }, options);
+      })
+    }, options)
 
-    observer.observe(this);
+    observer.observe(this)
   }
 
   /**
@@ -353,25 +349,19 @@ export class LiteYTEmbed extends HTMLElement {
       setTimeout(() => {
         this.shadowRoot
           .querySelector('iframe')
-          ?.contentWindow?.postMessage(
-            '{"event":"command","func":"' + 'playVideo' + '","args":""}',
-            '*'
-          );
+          ?.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*')
         // for youtube video recording demo
-      }, 2000);
+      }, 2000)
     }
   }
 
   /**
    * A hacky attr check and viewport peek to see if we're going to try to enable
    * a more friendly YouTube Short style loading
-   * @returns boolean
+   * @return boolean
    */
   private isYouTubeShort(): boolean {
-    return (
-      this.getAttribute('short') === '' &&
-      window.matchMedia('(max-width: 40em)').matches
-    );
+    return this.getAttribute('short') === '' && window.matchMedia('(max-width: 40em)').matches
   }
 
   /**
@@ -381,11 +371,11 @@ export class LiteYTEmbed extends HTMLElement {
    * @param {string} as
    */
   private static addPrefetch(kind: string, url: string): void {
-    const linkElem = document.createElement('link');
-    linkElem.rel = kind;
-    linkElem.href = url;
-    linkElem.crossOrigin = 'true';
-    document.head.append(linkElem);
+    const linkElem = document.createElement('link')
+    linkElem.rel = kind
+    linkElem.href = url
+    linkElem.crossOrigin = 'true'
+    document.head.append(linkElem)
   }
 
   /**
@@ -399,42 +389,39 @@ export class LiteYTEmbed extends HTMLElement {
    * Isolation and split caches adding serious complexity.
    */
   private static warmConnections(): void {
-    if (LiteYTEmbed.isPreconnected || window.liteYouTubeIsPreconnected) return;
+    if (LiteYTEmbed.isPreconnected || window.liteYouTubeIsPreconnected) return
     // we don't know which image type to preload, so warm the connection
-    LiteYTEmbed.addPrefetch('preconnect', 'https://i.ytimg.com/');
+    LiteYTEmbed.addPrefetch('preconnect', 'https://i.ytimg.com/')
 
     // Host that YT uses to serve JS needed by player, per amp-youtube
-    LiteYTEmbed.addPrefetch('preconnect', 'https://s.ytimg.com');
+    LiteYTEmbed.addPrefetch('preconnect', 'https://s.ytimg.com')
 
     // The iframe document and most of its subresources come right off
     // youtube.com
-    LiteYTEmbed.addPrefetch('preconnect', 'https://www.youtube.com');
+    LiteYTEmbed.addPrefetch('preconnect', 'https://www.youtube.com')
 
     // The botguard script is fetched off from google.com
-    LiteYTEmbed.addPrefetch('preconnect', 'https://www.google.com');
+    LiteYTEmbed.addPrefetch('preconnect', 'https://www.google.com')
 
     // TODO: Not certain if these ad related domains are in the critical path.
     // Could verify with domain-specific throttling.
-    LiteYTEmbed.addPrefetch(
-      'preconnect',
-      'https://googleads.g.doubleclick.net'
-    );
-    LiteYTEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net');
-    LiteYTEmbed.isPreconnected = true;
+    LiteYTEmbed.addPrefetch('preconnect', 'https://googleads.g.doubleclick.net')
+    LiteYTEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net')
+    LiteYTEmbed.isPreconnected = true
 
     // multiple embeds in the same page don't check for each other
-    window.liteYouTubeIsPreconnected = true;
+    window.liteYouTubeIsPreconnected = true
   }
 }
 // Register custom element
-customElements.define('lite-youtube', LiteYTEmbed);
+customElements.define('lite-youtube', LiteYTEmbed)
 
 declare global {
   interface HTMLElementTagNameMap {
-    'lite-youtube': LiteYTEmbed;
+    'lite-youtube': LiteYTEmbed
   }
   interface Window {
-    liteYouTubeNonce: string;
-    liteYouTubeIsPreconnected: boolean;
+    liteYouTubeNonce: string
+    liteYouTubeIsPreconnected: boolean
   }
 }

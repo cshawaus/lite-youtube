@@ -8,7 +8,7 @@ This component is all about tiny and fast features, not being the kitchen sink o
 
 ## Where can I start?
 
-I tag issues that are good-ish candidates for those new to the code with [`good first issue`](https://github.com/justinribeiro/lite-youtube/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22).
+I tag issues that are good-ish candidates for those new to the code with [`good first issue`](https://github.com/cshawaus/lite-youtube/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22).
 
 ## Follow the coding style
 

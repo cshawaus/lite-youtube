@@ -1,80 +1,106 @@
 {
-  "name": "@justinribeiro/lite-youtube",
+  "name": "@cshawaus/lite-youtube",
   "description": "A web component that loads YouTube embed iframes faster. ShadowDom based version of Paul Irish' concept.",
-  "author": "Justin Ribeiro <justin@justinribeiro.com>",
+  "homepage": "https://github.com/cshawaus/lite-youtube",
+  "license": "MIT",
+  "version": "0.0.1",
+  "author": "Chris Shaw <me@cshaw.xyz>",
+  "contributors": [
+    {
+      "email": "justin@justinribeiro.com",
+      "name": "Justin Ribeiro",
+      "url": "https://justinribeiro.com"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:justinribeiro/lite-youtube.git"
+    "url": "https://github.com/cshawaus/lite-youtube"
   },
-  "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "start": "yarn build && yarn web-dev-server --open demo/ --node-resolve",
-    "start:watch": "concurrently --raw \"yarn tsc --watch --preserveWatchOutput\" \"yarn wds --watch --open /demo --node-resolve\"",
-    "lint": "npm run lint:eslint && npm run lint:prettier",
-    "lint:eslint": "eslint *.ts --ignore-path .gitignore",
-    "lint:prettier": "prettier --check *.ts --ignore-path .gitignore",
-    "test": "tsc && wtr --coverage",
-    "test:watch": "tsc && wtr --coverage --watch",
-    "make-test-badges": "yarn istanbul-badges-readme",
-    "prepublishOnly": "npm run build"
+  "bugs": {
+    "url": "https://github.com/cshawaus/lite-youtube/issues"
   },
-  "files": [
-    "lite-youtube.d.ts",
-    "lite-youtube.js",
-    "lite-youtube.js.map"
-  ],
-  "license": "MIT",
-  "version": "1.5.0",
-  "type": "module",
-  "main": "lite-youtube.js",
-  "module": "lite-youtube.js",
-  "types": "lite-youtube.d.ts",
+  "engines": {
+    "node": ">= 16",
+    "pnpm": ">= 8.5"
+  },
   "keywords": [
+    "lite",
     "web components",
     "youtube"
   ],
-  "devDependencies": {
-    "@esm-bundle/chai": "^4.3.4-fix.0",
-    "@open-wc/eslint-config": "^7.0.0",
-    "@open-wc/testing": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "@web/dev-server": "^0.1.24",
-    "@web/test-runner": "^0.13.18",
-    "concurrently": "^7.0.0",
-    "eslint": "^8.0.0",
-    "eslint-config-prettier": "^8.3.0",
-    "istanbul-badges-readme": "^1.4.0",
-    "prettier": "^2.0.0",
-    "typescript": "^4.7.0"
+  "files": [
+    "lib"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "exports": {
+    "import": "./lib/index.esm.js",
+    "require": "./lib/index.cjs.js",
+    "types": "./lib/index.d.ts"
   },
-  "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/",
+    "tag": "latest"
+  },
+  "commitlint": {
     "extends": [
-      "@open-wc/eslint-config",
-      "eslint-config-prettier"
-    ],
-    "plugins": [
-      "@typescript-eslint"
+      "@commitlint/config-conventional"
     ],
     "rules": {
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error"
-      ],
-      "import/no-unresolved": "off",
-      "import/extensions": [
-        "error",
+      "footer-max-line-length": [
+        2,
         "always",
-        {
-          "ignorePackages": true
-        }
+        300
       ]
     }
   },
-  "prettier": {
-    "singleQuote": true,
-    "arrowParens": "avoid"
+  "scripts": {
+    "build": "tsx esbuild.ts",
+    "dev": "ESBUILD_WATCH=true tsx esbuild.ts",
+    "lint": "pnpm lint:eslint && pnpm lint:prettier",
+    "lint:eslint": "eslint --ext .ts --ignore-path .gitignore src/**",
+    "lint:prettier": "prettier --check src/*.ts --ignore-path .gitignore",
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "husky install",
+    "start": "pnpm run build && pnpm web-dev-server --open demo/ --node-resolve",
+    "start:watch": "concurrently --raw \"pnpm run tsc --watch --preserveWatchOutput\" \"pnpm run wds --watch --open /demo --node-resolve\"",
+    "test": "tsc && wtr --coverage",
+    "test:watch": "tsc && wtr --coverage --watch",
+    "make-test-badges": "pnpm run istanbul-badges-readme",
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.2",
+    "@commitlint/config-conventional": "^18.4.2",
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@open-wc/eslint-config": "^12.0.2",
+    "@open-wc/testing": "^4.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/node": "^20.9.2",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "@web/dev-server": "^0.4.1",
+    "@web/test-runner": "^0.18.0",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.19.5",
+    "esbuild-plugin-clean": "^1.0.1",
+    "esbuild-plugin-d.ts": "^1.1.0",
+    "eslint": "^8.54.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-lit": "^1.10.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
+    "istanbul-badges-readme": "^1.8.5",
+    "prettier": "^3.1.0",
+    "semantic-release": "^22.0.8",
+    "tsx": "^4.1.3",
+    "typescript": "^5.2.2"
   }
 }
