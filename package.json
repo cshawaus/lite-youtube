@@ -3,7 +3,7 @@
   "description": "A web component that loads YouTube embed iframes faster. ShadowDom based version of Paul Irish' concept.",
   "homepage": "https://github.com/cshawaus/lite-youtube",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Chris Shaw <me@cshaw.xyz>",
   "contributors": [
     {
